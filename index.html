@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smak Kaukazu - Gruzińskie lemoniady i mrożone przysmaki</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f9f9f9; color: #333; }
+        
+        /* Header */
+        header { background: linear-gradient(135deg, #d32f2f, #b71c1c); color: white; padding: 15px 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 28px; font-weight: bold; letter-spacing: 1px; }
+        .logo span { color: #ffc107; }
+        .cart-btn { background: #ffc107; color: #333; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .cart-btn:hover { background: #ffca28; transform: scale(1.05); }
+
+        /* Hero */
+        .hero { background: url('https://images.unsplash.com/photo-1544145945-f90425340c7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover; height: 400px; display: flex; align-items: center; justify-content: center; text-align: center; color: white; position: relative; }
+        .hero::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); }
+        .hero-content { position: relative; z-index: 1; }
+        .hero h1 { font-size: 48px; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .hero p { font-size: 20px; margin-bottom: 20px; }
+        .hero .btn { background: #d32f2f; color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .hero .btn:hover { background: #b71c1c; transform: scale(1.05); }
+
+        /* Sections */
+        .section-title { text-align: center; font-size: 32px; margin: 40px 0 20px; color: #d32f2f; }
+        .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 0 20px; max-width: 1200px; margin: 0 auto 40px; }
+        
+        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.3s; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; }
+        .product-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+        .product-info h3 { font-size: 18px; margin-bottom: 5px; }
+        .product-info .price { font-size: 22px; font-weight: bold; color: #d32f2f; margin: 10px 0; }
+        .product-info .price small { font-size: 14px; color: #777; text-decoration: line-through; margin-left: 5px; }
+        .product-info button { background: #2e7d32; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: auto; transition: 0.3s; }
+        .product-info button:hover { background: #1b5e20; }
+
+        /* Cart Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 200; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-content h2 { margin-bottom: 20px; color: #d32f2f; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .cart-item button { background: #d32f2f; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
+        .cart-total { text-align: right; font-size: 20px; font-weight: bold; margin: 20px 0; }
+        .checkout-btn { width: 100%; background: #2e7d32; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .close-btn { background: #777; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; }
+
+        /* Delivery Info */
+        .delivery-info { background: #e8f5e9; border-left: 5px solid #2e7d32; padding: 20px; margin: 20px auto; max-width: 1160px; border-radius: 8px; }
+        .delivery-info p { margin: 5px 0; font-size: 16px; }
+
+        /* Footer */
+        footer { background: #333; color: white; text-align: center; padding: 20px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="logo">Smak <span>Kaukazu</span></div>
+        <button class="cart-btn" onclick="toggleCart()">🛒 Koszyk (<span id="cart-count">0</span>)</button>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Prawdziwy Smak Kaukazu</h1>
+        <p>Gruzińskie lemoniady Zedazeni i domowe mrożone przysmaki</p>
+        <button class="btn" onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})">Zamów teraz</button>
+    </div>
+</section>
+
+<div class="delivery-info">
+    <p><strong>🚚 Dostawa:</strong> Od 2 opakowań – <strong>DARMOWA DOSTAWA</strong> po całej Warszawie!</p>
+    <p><strong>💰 Ceny:</strong> Wszystkie smaki w jednej cenie. Jedna butelka 0,5 ml – <strong>8 zł</strong>. Przy zakupie od 20 sztuk – <strong>7 zł/szt.</strong></p>
+</div>
+
+<h2 class="section-title" id="products">Napoje (Lemoniady Zedazeni)</h2>
+<div class="products" id="drinks-grid"></div>
+
+<h2 class="section-title">Mrożone przysmaki</h2>
+<div class="products" id="food-grid"></div>
+
+<!-- Cart Modal -->
+<div class="modal" id="cart-modal">
+    <div class="modal-content">
+        <h2>Twój Koszyk</h2>
+        <div id="cart-items"></div>
+        <div class="cart-total">Razem: <span id="cart-total">0</span> zł</div>
+        <button class="checkout-btn" onclick="checkout()">Złóż zamówienie</button>
+        <button class="close-btn" onclick="toggleCart()">Zamknij</button>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2026 Smak Kaukazu. Wszelkie prawa zastrzeżone.</p>
+    <p>Kontakt: +48 123 456 789 | info@smakkaukazu.pl</p>
+</footer>
+
+<script>
+    // Продукты
+    const products = [
+        { id: 1, name: 'Zedazeni Gruszka (Gruszka)', price: 8, category: 'drinks', img: 'https://images.unsplash.com/photo-1621263761366-6b7c92e14748?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+        { id: 2, name: 'Zedazeni Cytryna (Lemon)', price: 8, category: 'drinks', img: 'https://images.unsplash.com/photo-1621263761366-6b7c92e14748?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+        { id: 3, name: 'Zedazeni Tarhun (Estragon)', price: 8, category: 'drinks', img: 'https://images.unsplash.com/photo-1621263761366-6b7c92e14748?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+        { id: 4, name: 'Zedazeni Fejchoa', price: 8, category: 'drinks', img: 'https://images.unsplash.com/photo-1621263761366-6b7c92e14748?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+        { id: 5, name: 'Zedazeni Lime & Guava', price: 8, category: 'drinks', img: 'https://images.unsplash.com/photo-1621263761366-6b7c92e14748?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+        { id: 6, name: 'Zedazeni Marakuja (Passion Fruit)', price: 8, category: 'drinks', img: 'https://images.unsplash.com/photo-1621263761366-6b7c92e14748?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+        
+        { id: 7, name: 'Pielmieni z Wołowiną (0.5kg)', price: 25, category: 'food', img: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+        { id: 8, name: 'Manti z Baraniną (0.5kg)', price: 30, category: 'food', img: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+        { id: 9, name: 'Wareniki z Kartoflami (0.5kg)', price: 20, category: 'food', img: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+        { id: 10, name: 'Gałuszki z Serem (0.5kg)', price: 22, category: 'food', img: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' }
+    ];
+
+    let cart = [];
+
+    // Рендер продуктов
+    function renderProducts() {
+        const drinksGrid = document.getElementById('drinks-grid');
+        const foodGrid = document.getElementById('food-grid');
+        
+        drinksGrid.innerHTML = '';
+        foodGrid.innerHTML = '';
+
+        products.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <img src="${p.img}" alt="${p.name}">
+                <div class="product-info">
+                    <h3>${p.name}</h3>
+                    <div class="price">${p.price} zł</div>
+                    <button onclick="addToCart(${p.id})">Dodaj do koszyka</button>
+                </div>
+            `;
+            if (p.category === 'drinks') drinksGrid.appendChild(card);
+            else foodGrid.appendChild(card);
+        });
+    }
+
+    // Добавление в корзину
+    function addToCart(id) {
+        const product = products.find(p => p.id === id);
+        const existing = cart.find(item => item.id === id);
+        if (existing) {
+            existing.qty++;
+        } else {
+            cart.push({ ...product, qty: 1 });
+        }
+        updateCartUI();
+    }
+
+    // Обновление UI корзины
+    function updateCartUI() {
+        document.getElementById('cart-count').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+        const cartItemsDiv = document.getElementById('cart-items');
+        const cartTotalSpan = document.getElementById('cart-total');
+        
+        cartItemsDiv.innerHTML = '';
+        let total = 0;
+
+        cart.forEach(item => {
+            total += item.price * item.qty;
+            const div = document.createElement('div');
+            div.className = 'cart-item';
+            div.innerHTML = `
+                <span>${item.name} x${item.qty}</span>
+                <span>${(item.price * item.qty).toFixed(2)} zł <button onclick="removeFromCart(${item.id})">X</button></span>
+            `;
+            cartItemsDiv.appendChild(div);
+        });
+
+        cartTotalSpan.innerText = total.toFixed(2);
+    }
+
+    // Удаление из корзины
+    function removeFromCart(id) {
+        cart = cart.filter(item => item.id !== id);
+        updateCartUI();
+    }
+
+    // Открытие/закрытие корзины
+    function toggleCart() {
+        document.getElementById('cart-modal').classList.toggle('active');
+    }
+
+    // Оформление заказа
+    function checkout() {
+        if (cart.length === 0) {
+            alert('Twój koszyk jest pusty!');
+            return;
+        }
+        const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+        alert(`Dziękujemy za zamówienie!\nSuma: ${total.toFixed(2)} zł\n\nW naszej wersji demo nie ma płatności. Skontaktuj się z nami, aby sfinalizować zamówienie.`);
+        cart = [];
+        updateCartUI();
+        toggleCart();
+    }
+
+    // Инициализация
+    renderProducts();
+</script>
+
+</body>
+</html>
